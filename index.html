@@ -1,0 +1,337 @@
+<!doctype html><html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="google" content="notranslate">
+<title>English Game</title><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="config.js"></script>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f5f7fb;color:#172033;font-family:Arial,"Noto Sans KR",sans-serif}button,input{font:inherit}button{cursor:pointer;border:1px solid #d9deea;background:white;border-radius:12px;padding:12px 16px}button.primary{background:#3448d8;color:#fff;border:0;font-weight:800}.danger{color:#b42318}.hide{display:none!important}#app{min-height:100vh;padding:22px}.wrap{max-width:1180px;margin:auto}.login{max-width:620px;margin:10vh auto;background:#fff;padding:38px;border-radius:22px;box-shadow:0 12px 40px #11182712}.login input{width:100%;display:block;margin:10px 0;padding:14px;border:1px solid #d9deea;border-radius:12px}.top{display:flex;justify-content:space-between;align-items:center;gap:10px}.stats{display:grid;grid-template-columns:repeat(7,1fr);gap:10px;margin:18px 0}.card,.panel,.question{background:#fff;border-radius:17px;padding:17px;box-shadow:0 5px 20px #1118270a}.card b{display:block;font-size:21px}.actions{display:flex;gap:9px;flex-wrap:wrap;margin:18px 0}.question{font-size:clamp(22px,3vw,34px);font-weight:800;margin:18px 0}.question small{display:block;font-size:13px;color:#7a8498;margin-bottom:8px}.choice{width:100%;display:block;text-align:left;margin:8px 0;padding:14px;min-height:52px;touch-action:manipulation;-webkit-tap-highlight-color:transparent}.good{background:#dff7e7}.bad{background:#ffe0e0}.feedback{background:#eef1ff;padding:15px;border-radius:13px;margin:14px 0;line-height:1.6}.note{padding:12px 0;border-bottom:1px solid #e6eaf1}.layer{position:fixed;inset:0;background:#111827;color:#fff;z-index:999;display:flex;align-items:center;justify-content:center;padding:22px;text-align:center}.layerbox{width:min(820px,96vw)}.built{min-height:62px;border:2px dashed #ffffff70;border-radius:13px;padding:17px;margin:18px 0}.tokens{display:flex;gap:8px;flex-wrap:wrap;justify-content:center}.tablewrap{overflow:auto;background:#fff;border-radius:17px;padding:8px}table{width:100%;border-collapse:collapse;min-width:1000px}th,td{padding:11px;border-bottom:1px solid #e7eaf1;text-align:center}.mainrow{cursor:pointer}.selected{outline:3px solid #3448d8;outline-offset:-3px}.detailbox{text-align:left}.admin input{width:88px;padding:7px;border:1px solid #ccd2df;border-radius:8px}.admin input.idinput{width:140px}
+
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0}
+.bell{position:relative;font-size:23px;padding:9px 13px}.badge{position:absolute;right:-5px;top:-6px;background:#d92d20;color:white;border-radius:99px;font-size:11px;padding:2px 6px}
+.pop{position:absolute;right:22px;top:72px;width:min(480px,90vw);max-height:65vh;overflow:auto;background:#fff;border:1px solid #dde2ec;border-radius:16px;padding:14px;box-shadow:0 16px 45px #11182728;z-index:50}
+.alertrow{padding:11px 5px;border-bottom:1px solid #e8ebf2;text-align:left}.alertActions{display:flex;gap:6px;margin-top:7px}.alertActions button{padding:6px 9px;font-size:12px}.qcount{font-size:14px;color:#687386;font-weight:700}.hintbox{background:#fff8d9;border:1px solid #f0d66b;padding:14px;border-radius:13px;margin:12px 0;line-height:1.55}.muted{color:#778196;font-size:13px}
+@media(max-width:900px){.summary{grid-template-columns:repeat(2,1fr)}#app{padding:12px}.stats{grid-template-columns:repeat(2,1fr)}.login{margin:5vh auto;padding:25px}}
+
+.desktopAdmin{display:block}.mobileAdminCards{display:none}
+.adminCard{background:#fff;border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 5px 20px #1118270a}
+.adminCardTitle{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px}
+.adminCardTitle b{font-size:18px}
+.adminGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.adminField{background:#f7f8fc;border-radius:12px;padding:10px}
+.adminField label{display:block;font-size:12px;color:#778196;margin-bottom:6px;font-weight:700}
+.adminField input{width:100%!important;min-width:0;padding:10px!important;background:#fff}
+.adminCardActions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:12px}
+.adminCardActions button{width:100%;min-height:46px;padding:10px 8px}
+.adminCardActions .save{grid-column:1/-1;background:#3448d8;color:#fff;border-color:#3448d8;font-weight:800}
+.adminCardActions .delA{color:#b42318}
+.adminTopActions{display:flex;gap:8px;flex-wrap:wrap}
+@media(max-width:700px){
+  .desktopAdmin{display:none!important}
+  .mobileAdminCards{display:block}
+  .admin .top{position:sticky;top:0;z-index:20;background:#f5f7fb;padding:8px 0}
+  .admin .top h1{font-size:24px;margin:8px 0}
+  .adminTopActions{width:100%}
+  .adminTopActions button{flex:1;min-height:46px}
+  .admin>.actions{display:grid;grid-template-columns:1fr;gap:8px}
+  .admin>.actions button{width:100%;min-height:48px}
+  .adminGrid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .adminCard .idWide{grid-column:1/-1}
+  .admin .pop{position:fixed;left:10px;right:10px;top:72px;width:auto;max-height:75vh;padding:16px}
+  .admin .alertActions button{min-height:42px;flex:1}
+  .admin .alertActions{display:flex}
+}
+@media(max-width:390px){
+  .adminGrid{grid-template-columns:1fr}
+  .adminCard .idWide{grid-column:auto}
+  .adminCardActions{grid-template-columns:1fr 1fr}
+}
+
+
+.teacherDesktop{display:block}.teacherMobileCards{display:none}
+.teacherCard{background:#fff;border-radius:18px;padding:16px;margin:12px 0;box-shadow:0 5px 20px #1118270a}
+.teacherCardHead{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:12px}
+.teacherCardHead b{font-size:18px}
+.teacherStatsGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.teacherStat{background:#f7f8fc;border-radius:12px;padding:10px}
+.teacherStat span{display:block;font-size:12px;color:#778196;font-weight:700;margin-bottom:4px}
+.teacherStat b{font-size:17px}
+.teacherCard button{width:100%;min-height:46px;margin-top:12px}
+.teacherDetail{margin-top:10px}
+@media(max-width:700px){
+  .teacherDesktop{display:none!important}
+  .teacherMobileCards{display:block}
+  .teacherWrap .top{position:sticky;top:0;z-index:20;background:#f5f7fb;padding:8px 0}
+  .teacherWrap .summary{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .teacherWrap .panel{margin-top:12px}
+}
+@media(max-width:390px){
+  .teacherWrap .summary{grid-template-columns:1fr 1fr}
+  .teacherStatsGrid{grid-template-columns:1fr 1fr}
+}
+
+</style></head><body translate="no" class="notranslate"><main id="app"></main><div id="overlay"></div><script>
+const BANK=[{"id":1,"en":"No pain, no gain.","ko":"고생 없이는 얻는 것도 없다.","key":"고생(pain)을 해야 얻는 것(gain)이 생긴다고 연결."},{"id":2,"en":"Haste makes waste.","ko":"급할수록 일을 그르친다.","key":"서두름(haste)이 낭비(waste)를 만든다고 원인→결과로 기억."},{"id":3,"en":"Easy come, easy go.","ko":"쉽게 얻은 것은 쉽게 잃는다.","key":"쉽게 오면(come) 쉽게 간다(go)는 같은 구조."},{"id":4,"en":"Ignorance is bliss.","ko":"모르는 게 약이다.","key":"모르면(ignorance) 오히려 마음이 편하다(bliss)는 반전."},{"id":5,"en":"Knowledge is power.","ko":"아는 것이 힘이다.","key":"아는 것(knowledge) 자체가 힘(power)이 된다고 그대로 연결."},{"id":6,"en":"Old habits die hard.","ko":"오랜 습관은 고치기 어렵다.","key":"Old habits die — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":7,"en":"Look before you leap.","ko":"행동하기 전에 신중히 생각하라.","key":"뛰기(leap) 전에 먼저 살핀다(look)는 행동 순서."},{"id":8,"en":"No news is good news.","ko":"소식이 없는 것이 좋은 소식이다.","key":"나쁜 소식조차 없으니 no news를 good news로 연결."},{"id":9,"en":"Bad news travels fast.","ko":"나쁜 소식은 빨리 퍼진다.","key":"Bad news travels — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":10,"en":"It takes two to tango.","ko":"어떤 일에는 양쪽 모두 책임이 있다.","key":"탱고(tango)는 두 사람이 춰야 하니 양쪽이 필요."},{"id":11,"en":"Like father, like son.","ko":"그 아버지에 그 아들.","key":"Like father like — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":12,"en":"Still waters run deep.","ko":"조용한 사람이 속이 깊다.","key":"잔잔한 물(still waters)이 오히려 깊다(deep)는 장면."},{"id":13,"en":"Time heals all wounds.","ko":"시간이 모든 상처를 치유한다.","key":"Time heals all — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":14,"en":"You reap what you sow.","ko":"뿌린 대로 거둔다.","key":"먼저 sow(씨를 뿌리고) 나중에 reap(거둔다)는 순서."},{"id":15,"en":"Better late than never.","ko":"늦더라도 안 하는 것보다 낫다.","key":"늦게(late)라도 아예 안 하는 것(never)보다 낫다고 비교."},{"id":16,"en":"History repeats itself.","ko":"역사는 반복된다.","key":"History repeats itself — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":17,"en":"Let bygones be bygones.","ko":"지난 일은 잊어버리자.","key":"Let bygones be — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":18,"en":"Practice makes perfect.","ko":"연습이 완벽을 만든다.","key":"연습(practice)이 완벽(perfect)을 만든다는 원인→결과."},{"id":19,"en":"Fortune favors the bold.","ko":"행운은 용기 있는 사람의 편이다.","key":"Fortune favors the — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":20,"en":"Measure twice, cut once.","ko":"신중히 확인한 후 행동하라.","key":"자르기(cut)는 되돌리기 어려우니 두 번 재고(measure) 한 번 자름."},{"id":21,"en":"Barking dogs seldom bite.","ko":"짖는 개는 잘 물지 않는다.","key":"Barking dogs seldom — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":22,"en":"Hunger is the best sauce.","ko":"배고픔이 최고의 반찬이다.","key":"Hunger is the — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":23,"en":"Practice what you preach.","ko":"말한 대로 행동하라.","key":"Practice what you — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":24,"en":"You get what you pay for.","ko":"싼 게 비지떡이다.","key":"You get what — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":25,"en":"Beggars can't be choosers.","ko":"도움을 받는 처지에 가릴 수는 없다.","key":"Beggars can t — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":26,"en":"Out of sight, out of mind.","ko":"눈에서 멀어지면 마음에서도 멀어진다.","key":"눈(sight)에서 멀어지면 마음(mind)에서도 멀어진다고 짝으로 기억."},{"id":27,"en":"The cat is out of the bag.","ko":"비밀이 드러났다.","key":"가방 속 cat이 밖으로 나오듯 숨긴 비밀도 밖으로 드러남."},{"id":28,"en":"Honesty is the best policy.","ko":"정직이 최선의 방책이다.","key":"Honesty is the — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":29,"en":"Rome wasn't built in a day.","ko":"로마는 하루아침에 이루어지지 않았다.","key":"Rome wasn t — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":30,"en":"Blood is thicker than water.","ko":"피는 물보다 진하다.","key":"가족의 blood가 water보다 thicker(진하다)고 비교."},{"id":31,"en":"It’s the tip of the iceberg.","ko":"빙산의 일각이다.","key":"물 위에는 iceberg의 tip만 보인다는 그림."},{"id":32,"en":"Money doesn't grow on trees.","ko":"돈이 저절로 생기는 것은 아니다.","key":"Money doesn t — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":33,"en":"There is no place like home.","ko":"집만 한 곳은 없다.","key":"There is no — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":34,"en":"Learn to walk before you run.","ko":"기본부터 차근차근 배워라.","key":"Learn to walk — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":35,"en":"Strike while the iron is hot.","ko":"쇠뿔도 단김에 빼라.","key":"iron이 hot할 때 잘 두드려지니 그때 strike."},{"id":36,"en":"The customer is always right.","ko":"고객은 언제나 옳다.","key":"The customer is — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":37,"en":"A burnt child dreads the fire.","ko":"한번 데면 불을 무서워한다.","key":"A burnt child — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":38,"en":"All that glitters is not gold.","ko":"반짝이는 것이 모두 금은 아니다.","key":"반짝인다(glitters)고 전부 gold는 아니라는 반전."},{"id":39,"en":"Laughter is the best medicine.","ko":"웃음이 최고의 약이다.","key":"Laughter is the — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":40,"en":"Make hay while the sun shines.","ko":"기회가 있을 때 활용하라.","key":"Make hay while — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":41,"en":"Slow and steady wins the race.","ko":"천천히 꾸준히 하면 이긴다.","key":"느려도(slow) 꾸준하면(steady) 결국 race를 이김."},{"id":42,"en":"Time and tide wait for no man.","ko":"시간은 아무도 기다려 주지 않는다.","key":"Time and tide — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":43,"en":"What goes around comes around.","ko":"뿌린 대로 돌아온다.","key":"What goes around — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":44,"en":"Too many cooks spoil the broth.","ko":"사공이 많으면 배가 산으로 간다.","key":"Too many cooks — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":45,"en":"Actions speak louder than words.","ko":"말보다 행동이 중요하다.","key":"말(words)보다 행동(actions)이 더 크게 말한다고 비교."},{"id":46,"en":"Don't judge a book by its cover.","ko":"겉모습만 보고 판단하지 마라.","key":"Don t judge — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":47,"en":"If it ain't broke, don't fix it.","ko":"멀쩡한 것은 굳이 고치지 마라.","key":"If it ain — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":48,"en":"The early bird catches the worm.","ko":"일찍 일어나는 새가 벌레를 잡는다.","key":"일찍 나온 bird가 먼저 worm을 잡는 장면."},{"id":49,"en":"A good husband makes a good wife.","ko":"좋은 남편이 좋은 아내를 만든다.","key":"A good husband — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":50,"en":"Man does not live by bread alone.","ko":"사람은 빵만으로 살지 않는다.","key":"Man does not — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":51,"en":"Birds of a feather flock together.","ko":"끼리끼리 모인다.","key":"같은 feather의 새들이 한 flock으로 모이는 장면."},{"id":52,"en":"Empty vessels make the most sound.","ko":"빈 수레가 요란하다.","key":"빈 vessel일수록 부딪힐 때 sound가 크게 난다고 기억."},{"id":53,"en":"It's better to be safe than sorry.","ko":"후회하는 것보다 조심하는 편이 낫다.","key":"It s better — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":54,"en":"The squeaky wheel gets the grease.","ko":"목소리를 내는 사람이 관심을 받는다.","key":"The squeaky wheel — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":55,"en":"When in Rome, do as the Romans do.","ko":"로마에 가면 로마법을 따르라.","key":"Rome에 있으면 Romans가 하는 대로 한다는 장소→행동."},{"id":56,"en":"Where there's smoke, there's fire.","ko":"아니 땐 굴뚝에 연기 나랴.","key":"smoke가 있으면 원인인 fire도 있다고 연결."},{"id":57,"en":"Don't bite the hand that feeds you.","ko":"은혜를 베푸는 사람을 해치지 마라.","key":"Don t bite — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":58,"en":"Good things come to those who wait.","ko":"기다리는 사람에게 좋은 일이 온다.","key":"Good things come — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":59,"en":"The enemy of my enemy is my friend.","ko":"적의 적은 내 친구다.","key":"The enemy of — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":60,"en":"The pen is mightier than the sword.","ko":"펜은 칼보다 강하다.","key":"글과 생각의 pen이 무력의 sword보다 강하다고 비교."},{"id":61,"en":"You can't always get what you want.","ko":"원하는 것을 언제나 얻을 수는 없다.","key":"You can t — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":62,"en":"A friend in need is a friend indeed.","ko":"어려울 때 친구가 진짜 친구다.","key":"A friend in — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":63,"en":"A picture is worth a thousand words.","ko":"백문이 불여일견.","key":"picture 하나가 1000 words만큼 설명한다고 수치로 기억."},{"id":64,"en":"God helps those who help themselves.","ko":"하늘은 스스로 돕는 자를 돕는다.","key":"God helps those — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":65,"en":"A drowning man will catch at a straw.","ko":"물에 빠진 사람은 지푸라기라도 잡는다.","key":"A drowning man — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":66,"en":"Beauty is in the eye of the beholder.","ko":"아름다움은 보는 사람의 눈에 달렸다.","key":"Beauty is in — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":67,"en":"It's no use crying over spilled milk.","ko":"엎질러진 물을 후회해 봐야 소용없다.","key":"It s no — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":68,"en":"Necessity is the mother of invention.","ko":"필요는 발명의 어머니다.","key":"필요(necessity)가 발명(invention)을 낳는 mother."},{"id":69,"en":"A bad workman always blames his tools.","ko":"서투른 일꾼은 연장 탓을 한다.","key":"A bad workman — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":70,"en":"Don't put all your eggs in one basket.","ko":"한 곳에 모든 것을 걸지 마라.","key":"Don t put — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":71,"en":"Where there is a will, there is a way.","ko":"뜻이 있는 곳에 길이 있다.","key":"하려는 will이 있으면 방법 way가 생긴다고 짝으로 기억."},{"id":72,"en":"A man is known by the company he keeps.","ko":"친구를 보면 그 사람을 알 수 있다.","key":"A man is — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":73,"en":"Constant dripping wears away the stone.","ko":"낙숫물이 댓돌을 뚫는다.","key":"작은 dripping도 계속되면 stone을 닳게 함 = 꾸준함."},{"id":74,"en":"There is no such thing as a free lunch.","ko":"세상에 공짜 점심은 없다.","key":"lunch조차 free가 아니라는 말로 ‘공짜는 없다’를 기억."},{"id":75,"en":"Don't make a mountain out of a molehill.","ko":"침소봉대하지 마라.","key":"작은 molehill을 큰 mountain으로 만들지 말라 = 과장 금지."},{"id":76,"en":"When the cat's away, the mice will play.","ko":"고양이가 없으면 쥐들이 날뛴다.","key":"When the cat — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":77,"en":"The apple doesn't fall far from the tree.","ko":"자식은 부모를 닮는다.","key":"apple이 자기 tree 근처에 떨어짐 = 자식은 부모를 닮음."},{"id":78,"en":"The bigger they are, the harder they fall.","ko":"높이 올라갈수록 추락도 크다.","key":"The bigger they — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":79,"en":"All work and no play makes Jack a dull boy.","ko":"일만 하고 놀지 않으면 사람이 무미건조해진다.","key":"All work and — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":80,"en":"If you scratch my back, I'll scratch yours.","ko":"네가 나를 도우면 나도 너를 돕겠다.","key":"If you scratch — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":81,"en":"A bird in the hand is worth two in the bush.","ko":"남의 떡 두 개보다 내 떡 하나가 낫다.","key":"손의 확실한 1마리가 bush의 불확실한 2마리보다 낫다고 비교."},{"id":82,"en":"Don't count your chickens before they hatch.","ko":"김칫국부터 마시지 마라.","key":"알이 hatch하기 전에는 chicken이 확정된 게 아니니 세지 않음."},{"id":83,"en":"Treat others the way you want to be treated.","ko":"남에게 대접받고 싶은 대로 남을 대하라.","key":"Treat others the — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":84,"en":"Hope for the best, but prepare for the worst.","ko":"최선을 기대하되 최악에 대비하라.","key":"마음은 best를 바라되 행동은 worst에 대비한다고 둘로 기억."},{"id":85,"en":"Don't kill the goose that lays the golden eggs.","ko":"황금알을 낳는 거위를 죽이지 마라.","key":"Don t kill — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":86,"en":"Lightning never strikes twice in the same place.","ko":"같은 불행이 같은 곳에 두 번 오지는 않는다.","key":"Lightning never strikes — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":87,"en":"Don't put off until tomorrow what you can do today.","ko":"오늘 할 일을 내일로 미루지 마라.","key":"Don t put — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":88,"en":"If you run after two hares, you will catch neither.","ko":"두 마리 토끼를 쫓으면 둘 다 놓친다.","key":"hares 둘을 동시에 쫓으면 neither, 둘 다 못 잡음."},{"id":89,"en":"You can't make an omelet without breaking a few eggs.","ko":"희생 없이 성과를 얻을 수는 없다.","key":"You can t — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":90,"en":"A journey of a thousand miles begins with a single step.","ko":"천 리 길도 한 걸음부터.","key":"1000 miles도 시작은 single step 하나."},{"id":91,"en":"People who live in glass houses should not throw stones.","ko":"자신에게도 흠이 있다면 남을 비난하지 마라.","key":"People who live — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":92,"en":"The grass is always greener on the other side of the fence.","ko":"남의 것이 더 좋아 보인다.","key":"fence 건너편 grass가 더 greener해 보이는 장면."},{"id":93,"en":"You can lead a horse to water, but you can't make it drink.","ko":"기회는 줄 수 있지만 억지로 행동하게 할 수는 없다.","key":"water까지 데려갈(lead) 수는 있어도 drink는 강요 못 함."},{"id":94,"en":"If you want something done right, you have to do it yourself.","ko":"일을 제대로 하려면 직접 해야 한다.","key":"If you want — 한국어 뜻의 장면과 이 순서를 함께 떠올려."},{"id":95,"en":"Give a man a fish and you feed him for a day. Teach a man to fish and you feed him for a lifetime.","ko":"물고기를 주면 하루를 먹이지만 낚시를 가르치면 평생 먹인다.","key":"fish를 주면 day, 잡는 법을 teach하면 lifetime이라고 대비."}],db=supabase.createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY),app=document.getElementById("app"),overlay=document.getElementById("overlay");
+const SKEY="english_game_session";let u=null,sess=null,timer=null,tick=0,q=null,deck=[],review=[],answered=false,streak=0,bad=0,firstTriple=true,base={q:0,c:0,w:0};
+let token=null,lastAnswerAt=0,recentResults=[],focusLeftAt=null,sessionQuestionStart=null,activityTimer=null,sessionPoll=null,sessionSolved=0,alertWrongStreak=0;
+const mix=a=>{a=[...a];for(let i=a.length-1;i;i--){let j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a},on=(id,fn)=>{let e=document.getElementById(id);if(e)e.addEventListener("click",fn)},fmt=n=>{n=+n||0;let h=Math.floor(n/3600),m=Math.floor(n%3600/60);return h?`${h}시간 ${m}분`:`${m}분`},dt=x=>x?new Date(x).toLocaleString("ko-KR"):"-",tm=x=>new Date(x).toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"});
+
+const newToken=()=>crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random().toString(36).slice(2);
+async function event(type,message,data={}){if(!u)return;await db.from("student_events").insert({student_id:u.id,session_id:sess?.id||null,event_type:type,event_message:message,event_data:data})}
+async function claim(force=false){
+ let fresh=newToken(),old=u.active_session_token;
+ if(old&&!force){let yes=confirm("다른 곳에서 이 계정이 사용 중입니다.\n기존 접속을 종료하고 여기에서 로그인하시겠습니까?");if(!yes)return false}
+ let {data:oldToken,error}=await db.rpc("claim_student_session",{p_student_id:u.id,p_new_token:fresh});if(error){alert(error.message);return false}
+ token=fresh;u.active_session_token=fresh;
+ if(oldToken){
+   let now=new Date().toISOString();
+   await db.from("study_sessions").update({ended_at:now,logout_reason:"duplicate_login",forced_logout:true})
+     .eq("student_id",u.id).eq("session_token",oldToken).is("ended_at",null);
+   await event("duplicate_login",`${u.username} 계정에 새로운 로그인이 발생했습니다.`,{replaced_token:oldToken});
+ }
+ return true
+}
+async function release(reason="manual"){if(u&&token)await db.rpc("release_student_session",{p_student_id:u.id,p_session_token:token});if(sess?.id)await db.from("study_sessions").update({ended_at:new Date().toISOString(),logout_reason:reason,forced_logout:reason!=="manual"}).eq("id",sess.id)}
+async function forcedOut(msg,reason){await flush(false,true);await release(reason);await event(reason,`${u.username} · ${msg}`);clearInterval(timer);clearInterval(activityTimer);clearInterval(sessionPoll);saveLogin(null);alert(msg);loginPage()}
+async function pollSession(){if(!u||!token)return;let {data}=await db.from("students").select("active_session_token").eq("id",u.id).maybeSingle();if(data&&data.active_session_token!==token){await flush(false,true);if(sess?.id)await db.from("study_sessions").update({ended_at:new Date().toISOString(),logout_reason:"duplicate_login",forced_logout:true}).eq("id",sess.id).is("ended_at",null);clearInterval(timer);clearInterval(activityTimer);clearInterval(sessionPoll);saveLogin(null);alert("다른 곳에서 이 계정으로 로그인하여 현재 접속이 종료되었습니다.");loginPage()}}
+function startGuards(){clearInterval(activityTimer);clearInterval(sessionPoll);activityTimer=setInterval(()=>{if(lastAnswerAt&&Date.now()-lastAnswerAt>=15*60*1000)forcedOut("15분 동안 문제 풀이가 없어 자동 로그아웃되었습니다.","inactivity_logout")},15000);sessionPoll=setInterval(pollSession,5000)}
+async function markAnswer(ok){
+ let now=Date.now(),delta=sessionQuestionStart?Math.max(0,Math.floor((now-sessionQuestionStart)/1000)):0;
+ // Only time up to an actual answered question counts. Cap one question interval at 15 min.
+ let credited=Math.min(delta,15*60);if(credited){u.study_seconds=(+u.study_seconds||0)+credited;sess.study_seconds=(+sess.study_seconds||0)+credited}
+ lastAnswerAt=now;sessionQuestionStart=now;u.last_answered_at=new Date(now).toISOString();
+ await db.from("students").update({study_seconds:u.study_seconds,last_answered_at:u.last_answered_at,last_studied_at:u.last_answered_at}).eq("id",u.id);
+ if(sess?.id)await db.from("study_sessions").update({study_seconds:sess.study_seconds,last_answered_at:u.last_answered_at}).eq("id",sess.id);
+ recentResults.push(ok);if(recentResults.length>10)recentResults.shift();
+ if(!ok&&alertWrongStreak>=5)await event("wrong_streak",`${u.username} · 연속 ${alertWrongStreak}문제 오답 · 집중 확인 필요`,{wrong_streak:alertWrongStreak});
+ if(recentResults.length===10&&recentResults.filter(x=>!x).length>=8)await event("high_wrong_rate",`${u.username} · 최근 10문제 중 ${recentResults.filter(x=>!x).length}문제 오답 · 집중 확인 필요`,{results:recentResults});
+ saveStudentState();
+}
+async function persistProverbProgress(){
+ if(!u)return;
+ let ids=deck.map(x=>x.id),cycle=Math.max(1,+u.proverb_cycle||1),answered=Math.max(0,Math.min(95,+u.proverb_cycle_answered||0));
+ u.proverb_deck=ids;
+ let {error}=await db.rpc("save_proverb_progress",{p_student_id:u.id,p_deck:ids,p_cycle:cycle,p_cycle_answered:answered});
+ if(error)console.error("progress save failed",error);
+}
+async function restoreDeck(){
+ if(!u)return;
+ let {data,error}=await db.from("students").select("proverb_deck,proverb_cycle,proverb_cycle_answered").eq("id",u.id).maybeSingle();
+ if(!error&&data){
+   u.proverb_deck=Array.isArray(data.proverb_deck)?data.proverb_deck:[];
+   u.proverb_cycle=Math.max(1,+data.proverb_cycle||1);
+   u.proverb_cycle_answered=Math.max(0,+data.proverb_cycle_answered||0);
+ }
+ deck=(Array.isArray(u.proverb_deck)?u.proverb_deck:[]).map(id=>BANK.find(x=>x.id===+id)).filter(Boolean);
+}
+function hintText(x){let w=x.en.replace(/[.,!?]/g,"").split(/\s+/).filter(z=>z.length>=4);return `핵심 단어: ${(w.slice(0,3).join(" · ")||x.en.split(/\s+/).slice(0,2).join(" · "))}. 한국어 뜻의 상황과 영어 문장의 흐름을 연결해 봐.`}
+async function countHintUse(){if(hintUsedForQuestion||!u)return;hintUsedForQuestion=true;u.hint_count=(+u.hint_count||0)+1;await db.from("students").update({hint_count:u.hint_count}).eq("id",u.id)}
+async function showHint(){if(!q)return;let h=document.getElementById("hintbox");if(h){h.textContent="💡 "+hintText(q);h.classList.remove("hide")}await countHintUse()}
+
+let translationWatch=null,translationSnapshot="",translationAlerted=false,hintUsedForQuestion=false;
+function quizTextSnapshot(){
+ let el=document.querySelector(".question"),choices=[...document.querySelectorAll(".choice")].map(x=>x.textContent.trim()).join("|");
+ return (el?el.textContent.trim():"")+"||"+choices;
+}
+function armTranslationWatch(){
+ clearInterval(translationWatch);translationSnapshot=quizTextSnapshot();translationAlerted=false;
+ translationWatch=setInterval(async()=>{
+   if(!u||!q||answered)return;
+   let now=quizTextSnapshot();
+   if(translationSnapshot&&now&&now!==translationSnapshot&&!translationAlerted){
+     translationAlerted=true;
+     await event("browser_translation_suspected",`${u.username} · 브라우저 번역 사용 의심`,{proverb_id:q.id,at:new Date().toISOString()});
+   }
+ },1200);
+}
+function stopTranslationWatch(){clearInterval(translationWatch);translationWatch=null}
+function saveLogin(v){v?sessionStorage.setItem(SKEY,JSON.stringify(v)):sessionStorage.removeItem(SKEY)}
+function saveStudentState(){
+ if(!u||!token)return;
+ saveLogin({type:"student",id:u.id,token,sessionId:sess?.id||null,sessionSolved,base,lastAnswerAt});
+}
+function keysOff(){window.onkeydown=null}
+async function openSess(){
+ let now=new Date().toISOString();
+ base={q:+u.total_questions||0,c:+u.correct_answers||0,w:+u.wrong_answers||0};
+ let {data,error}=await db.from("study_sessions").insert({student_id:u.id,started_at:now,session_token:token}).select().single();
+ if(error){alert("학습 세션을 시작하지 못했습니다: "+error.message);return false}
+ sess=data;lastAnswerAt=Date.now();sessionQuestionStart=Date.now();saveStudentState();
+ await event("study_start",`${u.username} · 학습 시작`,{started_at:now});
+ return true
+}
+async function flush(close=false,noEnd=false){
+ if(!u||!sess?.id)return;
+ let v={study_seconds:+sess.study_seconds||0,questions:(+u.total_questions||0)-base.q,correct:(+u.correct_answers||0)-base.c,wrong:(+u.wrong_answers||0)-base.w};
+ if(close&&!noEnd)v.ended_at=new Date().toISOString();
+ await db.from("study_sessions").update(v).eq("id",sess.id);
+ saveStudentState();
+}
+function startTimer(){clearInterval(timer);timer=setInterval(()=>flush(),15000);startGuards()}
+let awayStartedAt=null,awayLogged=false,awayTimer=null;
+function beginAway(){
+ if(!u||awayStartedAt)return;
+ awayStartedAt=Date.now();awayLogged=false;
+ clearTimeout(awayTimer);
+ // Ignore accidental/very short switches. Record one compact event after 10 seconds away.
+ awayTimer=setTimeout(async()=>{
+   if(u&&awayStartedAt&&!awayLogged){
+     awayLogged=true;
+     await event("focus_leave",`${u.username} · 학습 화면 이탈`,{left_at:new Date(awayStartedAt).toISOString()});
+   }
+ },10000);
+}
+async function endAway(){
+ if(!u||!awayStartedAt)return;
+ clearTimeout(awayTimer);
+ let sec=Math.floor((Date.now()-awayStartedAt)/1000);
+ if(awayLogged){
+   // Update the same compact trail with one return event; teacher UI filters routine returns out.
+   await event("focus_return",`${u.username} · 화면 복귀 · ${Math.floor(sec/60)}분 ${sec%60}초 이탈`,{away_seconds:sec,returned_at:new Date().toISOString()});
+ }
+ awayStartedAt=null;awayLogged=false;sessionQuestionStart=Date.now();
+}
+document.addEventListener("visibilitychange",()=>document.hidden?beginAway():endAway());
+window.addEventListener("blur",beginAway);
+window.addEventListener("focus",endAway);
+function loginPage(msg=""){keysOff();clearInterval(timer);u=sess=null;app.innerHTML=`<div class=login><h1>English Game</h1><input id=uid placeholder=ID><input id=pw type=password placeholder=Password><div id=err style="height:28px;color:#b42318">${msg}</div><button id=go class=primary style="width:100%">LOGIN</button></div>`;on("go",login);document.getElementById("pw").onkeydown=e=>{if(e.key==="Enter")login()}}
+async function login(){
+ let n=document.getElementById("uid").value.trim(),p=document.getElementById("pw").value;
+ let {data:t}=await db.from("teacher_account").select("*").eq("id",1).maybeSingle();
+ if(t&&n===t.username&&p===t.password){saveLogin({type:"teacher"});return teacher()}
+ let {data}=await db.from("students").select("*").eq("username",n).eq("password",p).maybeSingle();
+ if(!data){err.textContent="ID 또는 Password를 확인해 주세요.";return}
+ u=data;sessionSolved=0;alertWrongStreak=0;recentResults=[];streak=0;bad=0;firstTriple=true;
+ if(!(await claim(false))){u=null;return}
+ if(!(await openSess())){u=null;return}
+ saveStudentState();startTimer();home()
+}
+async function restore(){
+ let st;try{st=JSON.parse(sessionStorage.getItem(SKEY)||"null")}catch{}
+ if(st?.type==="teacher")return teacher();
+ if(st?.type==="student"){
+   let {data}=await db.from("students").select("*").eq("id",st.id).maybeSingle();
+   if(data&&data.active_session_token===st.token){
+     u=data;token=st.token;sessionSolved=Math.max(0,+st.sessionSolved||0);base=st.base||{q:+u.total_questions||0,c:+u.correct_answers||0,w:+u.wrong_answers||0};
+     let row=null;
+     if(st.sessionId){let {data:r}=await db.from("study_sessions").select("*").eq("id",st.sessionId).maybeSingle();row=r}
+     if(!row){
+       let {data:r}=await db.from("study_sessions").select("*").eq("student_id",u.id).is("ended_at",null).order("started_at",{ascending:false}).limit(1).maybeSingle();
+       row=r;
+       if(row&&row.session_token!==token)await db.from("study_sessions").update({session_token:token}).eq("id",row.id);
+     }
+     if(row){
+       sess=row;
+       if(!st.base)base={q:(+u.total_questions||0)-(+row.questions||0),c:(+u.correct_answers||0)-(+row.correct||0),w:(+u.wrong_answers||0)-(+row.wrong||0)};
+       lastAnswerAt=Math.max(0,+st.lastAnswerAt||0)||Date.parse(row.last_answered_at||row.started_at)||Date.now();
+       sessionQuestionStart=Date.now();saveStudentState();startTimer();return home()
+     }
+     if(await openSess()){startTimer();return home()}
+   }
+ }
+ loginPage()
+}
+async function logout(){stopTranslationWatch();await flush(true);await event("study_end",`${u.username} · 학습 종료`,{});await release("manual");clearInterval(timer);clearInterval(activityTimer);clearInterval(sessionPoll);saveLogin(null);loginPage()}
+function home(){stopTranslationWatch();keysOff();let n=+u.total_questions||0,c=+u.correct_answers||0,w=+u.wrong_answers||0;app.innerHTML=`<div class=wrap><div class=top><h1>English Game</h1><button id=logout>LOGOUT</button></div><div class=stats><div class=card><b>${sess?tm(sess.started_at):"-"}</b>시작시간</div><div class=card><b>${fmt(u.study_seconds)}</b>학습시간</div><div class=card><b>${n}</b>푼 문제</div><div class=card><b>${c}</b>정답</div><div class=card><b>${w}</b>오답</div><div class=card><b>${n?Math.round(c/n*100):0}%</b>정답률</div><div class=card><b>${u.best_streak||0}</b>최고 연속</div></div><div class=actions><button id=start class=primary>START</button><button id=notes>📕 오답노트</button><button id=review>오답 다시 풀기</button>${u.username==="gyuchan"?'<button id=adminBtn>관리자</button>':""}</div></div>`;on("logout",logout);on("start",async()=>{streak=bad=0;alertWrongStreak=0;recentResults=[];firstTriple=true;await next()});on("notes",notes);on("review",reviewStart);if(u.username==="gyuchan"){on("adminBtn",admin);window.onkeydown=e=>{if(e.ctrlKey&&e.key.toLowerCase()==="c"){e.preventDefault();admin()}}}}
+function refill(){let er=Math.min(100,Math.max(0,+u.easy_ratio||50))/100,rank=x=>x.en.split(" ").length+(x.en.length/35);let sorted=[...BANK].sort((a,b)=>rank(a)-rank(b)),cut=Math.round(sorted.length*.55),E=mix(sorted.slice(0,cut)),H=mix(sorted.slice(cut)),out=[],used=new Set();while(out.length<95){let pool=Math.random()<er?E:H,x=pool.find(z=>!used.has(z.id))||[...E,...H].find(z=>!used.has(z.id));if(!x)break;out.push(x);used.add(x.id)}deck=out;u.proverb_cycle=Math.max(1,+u.proverb_cycle||1);u.proverb_cycle_answered=0}
+function opts(x){return mix([x,...mix(BANK.filter(y=>y.id!==x.id)).slice(0,4)])}
+function quiz(reviewMode=false){keysOff();answered=false;hintUsedForQuestion=false;app.innerHTML=`<div class=wrap><div class=top><span class=qcount>이번에 푼 문제: ${sessionSolved}</span><button id=quit>${reviewMode?"나가기":"그만하기"}</button></div><div class="question notranslate" translate="no"><small>뜻</small>${q.ko}</div><div class=actions><button id=qhint>💡 힌트</button></div><div id=hintbox class="hintbox hide"></div><div id=choices class=notranslate translate="no"></div><div id=fb></div><button id=nxt class="primary hide">다음 →</button></div>`;let box=document.getElementById("choices");opts(q).forEach((x,i)=>{let b=document.createElement("button");b.className="choice";b.dataset.id=x.id;b.textContent=`${i+1}. ${x.en}`;b.addEventListener("click",()=>reviewMode?reviewAns(b,x.id):ans(b,x.id));box.appendChild(b)});on("qhint",showHint);on("quit",home);on("nxt",reviewMode?reviewNext:next);window.onkeydown=e=>{if(e.key.toLowerCase()==="p"&&!e.ctrlKey&&!e.metaKey){e.preventDefault();showHint()}};setTimeout(armTranslationWatch,150)}
+async function next(){
+ await restoreDeck();
+ if(!deck.length){
+   if((+u.proverb_cycle_answered||0)>=95)u.proverb_cycle=Math.max(1,+u.proverb_cycle||1)+1;
+   refill();await persistProverbProgress();
+ }
+ q=deck[0];sessionQuestionStart=Date.now();quiz()
+}
+async function ans(btn,id){
+ if(answered)return;
+ stopTranslationWatch();answered=true;
+ let ok=id===q.id;
+ sessionSolved++;saveStudentState();
+ document.querySelectorAll(".choice").forEach(b=>{b.disabled=true;if(+b.dataset.id===q.id)b.classList.add("good")});
+ u.total_questions=(+u.total_questions||0)+1;
+ if(ok){
+   u.correct_answers=(+u.correct_answers||0)+1;streak++;bad=0;alertWrongStreak=0;
+   u.best_streak=Math.max(+u.best_streak||0,streak);
+   fb.innerHTML=`<div class=feedback><b>정답!</b></div>`;
+ }else{
+   u.wrong_answers=(+u.wrong_answers||0)+1;streak=0;bad++;alertWrongStreak++;
+   btn.classList.add("bad");
+   fb.innerHTML=`<div class=feedback><b>${q.en}</b><br>${q.ko}<br>💡 ${q.key}</div>`;
+   let {data}=await db.from("wrong_answers").select("*").eq("student_id",u.id).eq("proverb_id",q.id).maybeSingle();
+   data?await db.from("wrong_answers").update({wrong_count:(+data.wrong_count||0)+1}).eq("id",data.id):await db.from("wrong_answers").insert({student_id:u.id,proverb_id:q.id,wrong_count:1});
+ }
+ await markAnswer(ok);
+ await db.from("students").update({total_questions:u.total_questions,correct_answers:u.correct_answers,wrong_answers:u.wrong_answers,best_streak:u.best_streak,last_studied_at:new Date().toISOString()}).eq("id",u.id);
+
+ let idx=deck.findIndex(x=>x.id===q.id);
+ if(idx>=0)deck.splice(idx,1);
+ u.proverb_cycle_answered=Math.min(95,(+u.proverb_cycle_answered||0)+1);
+ await persistProverbProgress();
+ saveStudentState();
+
+ nxt.classList.remove("hide");
+ if(ok&&streak%10===0)setTimeout(()=>streakToast(),100);
+ if(!ok&&bad>=3){
+   bad=0;
+   setTimeout(()=>{if(firstTriple){firstTriple=false;tail()}else Math.random()<.5?flash("🚨 정신 차려! 집중!"):tail()},150)
+ }
+}
+function streakToast(){let d=document.createElement("div");d.style.cssText="position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:2000;background:#111827;color:white;padding:14px 22px;border-radius:14px;font-weight:900";d.textContent="🔥 10 STREAK! · PERFECT RUN";document.body.appendChild(d);setTimeout(()=>d.remove(),1200)}
+function flash(t){overlay.innerHTML=`<div class=layer><div class=layerbox><h1>${t}</h1></div></div>`;setTimeout(()=>overlay.innerHTML="",1000)}
+function tail(){let words=q.en.split(/\s+/),step=u.username==="Riizepickme"?Math.max(2,Math.ceil(words.length/3)):(words.length>8?2:1),parts=[];for(let i=0;i<words.length;i+=step)parts.push(words.slice(i,i+step).join(" "));let pos=0,got=[];overlay.innerHTML=`<div class=layer><div class=layerbox><h1>꼬리 이어붙이기</h1><p style="font-size:20px">${q.ko}</p><div id=built class=built>START</div><div id=tokens class=tokens></div><div class=actions style="justify-content:center"><button id=hint>💡 힌트</button></div></div></div>`;let built=document.getElementById("built"),tokens=document.getElementById("tokens"),h=document.getElementById("hint");function accept(){got.push(parts[pos]);pos++;built.textContent=got.join(" ");if(pos===parts.length){tokens.innerHTML="";h.disabled=true;setTimeout(()=>overlay.innerHTML="",450)}else draw()}function draw(){tokens.innerHTML="";mix(parts.map((text,i)=>({text,i})).filter(x=>x.i>=pos)).forEach(x=>{let b=document.createElement("button");b.textContent=x.text;b.onclick=()=>{if(x.i===pos)accept()};tokens.appendChild(b)})}h.onclick=async()=>{if(pos>=parts.length)return;await countHintUse();if(Math.random()<.5){let old=h.textContent;h.textContent="💡 "+parts[pos];h.disabled=true;setTimeout(()=>{if(h.isConnected){h.textContent=old;h.disabled=false}},1000)}else accept()};draw()}
+async function notes(){keysOff();let {data=[]}=await db.from("wrong_answers").select("*").eq("student_id",u.id).order("wrong_count",{ascending:false});app.innerHTML=`<div class=wrap><div class=top><h1>📕 오답노트</h1><button id=back>나가기</button></div><div class=panel>${data.map(w=>{let x=BANK.find(y=>y.id===w.proverb_id);return x?`<div class=note><b>${x.en}</b><br>${x.ko}<br>💡 ${x.key}<br>오답 ${w.wrong_count}회</div>`:""}).join("")||"오답이 없습니다."}</div></div>`;on("back",home)}
+async function reviewStart(){let {data=[]}=await db.from("wrong_answers").select("*").eq("student_id",u.id);review=mix(data.map(x=>x.proverb_id));if(!review.length)return alert("복습할 오답이 없습니다.");reviewNext()}
+function reviewNext(){if(!review.length)return home();q=BANK.find(x=>x.id===review.shift());sessionQuestionStart=Date.now();quiz(true)}
+async function reviewAns(btn,id){if(answered)return;stopTranslationWatch();answered=true;let ok=id===q.id;lastAnswerAt=Date.now();sessionQuestionStart=Date.now();document.querySelectorAll(".choice").forEach(b=>{b.disabled=true;if(+b.dataset.id===q.id)b.classList.add("good")});if(ok){await db.from("wrong_answers").delete().eq("student_id",u.id).eq("proverb_id",q.id);fb.innerHTML=`<div class=feedback><b>정답! 오답노트에서 완료 처리했습니다.</b></div>`}else{btn.classList.add("bad");fb.innerHTML=`<div class=feedback><b>${q.en}</b><br>${q.ko}<br>💡 ${q.key}</div>`}nxt.classList.remove("hide")}
+async function resetStudentRecord(id){
+ await db.from("wrong_answers").delete().eq("student_id",id);
+ await db.from("study_sessions").delete().eq("student_id",id);
+ await db.from("student_events").delete().eq("student_id",id);
+ await db.from("students").update({
+   study_seconds:0,total_questions:0,correct_answers:0,wrong_answers:0,best_streak:0,hint_count:0,
+   proverb_deck:[],proverb_cycle:1,proverb_cycle_answered:0,last_studied_at:null,last_answered_at:null,
+   active_session_token:null,active_session_started_at:null
+ }).eq("id",id);
+}
+async function teacher(){keysOff();let {data=[]}=await db.from("students").select("*").order("username");let today=new Date();today.setHours(0,0,0,0);let {data:todayS=[]}=await db.from("study_sessions").select("*").gte("started_at",today.toISOString());let nowMs=Date.now(),active=data.filter(x=>x.active_session_token&&nowMs-Date.parse(x.last_answered_at||x.active_session_started_at||0)<15*60*1000).length,totalToday=todayS.reduce((a,x)=>a+(+x.study_seconds||0),0),studied=new Set(todayS.map(x=>x.student_id)).size;let {data:alerts=[]}=await db.from("student_events").select("*,students(username)").in("event_type",["inactivity_logout","focus_leave","duplicate_login","wrong_streak","high_wrong_rate","browser_translation_suspected"]).order("created_at",{ascending:false}).limit(20);let rows=data.map(x=>`<tr class=mainrow data-id="${x.id}"><td>${x.username}</td><td>${fmt(x.study_seconds)}</td><td>${x.total_questions||0}</td><td>${x.correct_answers||0}</td><td>${x.wrong_answers||0}</td><td>${x.total_questions?Math.round(x.correct_answers/x.total_questions*100)+"%":"-"}</td><td>${x.best_streak||0}</td><td>${x.hint_count||0}</td><td>${dt(x.last_studied_at)}</td><td><button class=exp data-id="${x.id}">›</button></td></tr><tr id=d${x.id} class=hide><td colspan=10><div class=detailbox></div></td></tr>`).join(""),
+cards=data.map(x=>`<section class=teacherCard data-id="${x.id}">
+  <div class=teacherCardHead><b>${x.username}</b><span class=muted>${x.active_session_token?"접속 기록 있음":"-"}</span></div>
+  <div class=teacherStatsGrid>
+    <div class=teacherStat><span>학습시간</span><b>${fmt(x.study_seconds)}</b></div>
+    <div class=teacherStat><span>푼 문제</span><b>${x.total_questions||0}</b></div>
+    <div class=teacherStat><span>정답</span><b>${x.correct_answers||0}</b></div>
+    <div class=teacherStat><span>오답</span><b>${x.wrong_answers||0}</b></div>
+    <div class=teacherStat><span>정답률</span><b>${x.total_questions?Math.round(x.correct_answers/x.total_questions*100)+"%":"-"}</b></div>
+    <div class=teacherStat><span>최고연속</span><b>${x.best_streak||0}</b></div>
+    <div class=teacherStat><span>힌트 사용</span><b>${x.hint_count||0}</b></div>
+    <div class=teacherStat><span>마지막 학습</span><b style="font-size:13px">${dt(x.last_studied_at)}</b></div>
+  </div>
+  <button class=expMobile data-id="${x.id}">세션 기록 보기</button>
+  <div id=md${x.id} class="teacherDetail hide"></div>
+</section>`).join("");
+app.innerHTML=`<div class="wrap teacherWrap"><div class=top><h1>Teacher Dashboard</h1><button id=lo>LOGOUT</button></div><div class=summary><div class=card><b>${studied}</b>오늘 학습한 학생</div><div class=card><b>${active}</b>현재 접속</div><div class=card><b>${fmt(totalToday)}</b>오늘 총 학습</div><div class=card><b>${alerts.length}</b>중요 알림</div></div><div class=panel><b>최근 중요 알림</b>${(()=>{let m=new Map(),g=[];alerts.forEach(a=>{let k=`${a.student_id}|${a.event_type}|${a.event_message||""}`;if(m.has(k))m.get(k).n++;else{let z={...a,n:1};m.set(k,z);g.push(z)}});return g.slice(0,6).map(a=>`<div class=alertrow>${a.event_message||a.event_type}${a.n>1?` <b>×${a.n}</b>`:""}<div class=muted>${dt(a.created_at)}</div></div>`).join("")||"<div class=note>알림이 없습니다.</div>"})()}</div><div id=tools class="actions hide"><button id=add>학생 추가</button><button id=rename>ID 변경</button><button id=spw>비밀번호 변경</button><button id=reset>기록 초기화</button><button id=del class=danger>학생 삭제</button></div><div class="tablewrap teacherDesktop" style="margin-top:18px"><table><thead><tr><th>ID</th><th>학습시간</th><th>푼 문제</th><th>정답</th><th>오답</th><th>정답률</th><th>최고연속</th><th>힌트 사용</th><th>마지막 학습</th><th></th></tr></thead><tbody>${rows}</tbody></table></div><div class=teacherMobileCards>${cards}</div></div>`;on("lo",()=>{saveLogin(null);loginPage()});let sel=null;document.querySelectorAll(".mainrow").forEach(r=>r.onclick=()=>{document.querySelectorAll(".mainrow").forEach(x=>x.classList.remove("selected"));r.classList.add("selected");sel=r.dataset.id});document.querySelectorAll(".exp").forEach(b=>b.onclick=async e=>{e.stopPropagation();let r=document.getElementById("d"+b.dataset.id);if(!r.classList.contains("hide"))return r.classList.add("hide");let {data=[]}=await db.from("study_sessions").select("*").eq("student_id",b.dataset.id).order("started_at",{ascending:false}).limit(50);r.querySelector(".detailbox").innerHTML=data.length?data.map(v=>`<div class=note><b>${dt(v.started_at)}</b> 시작 → ${v.ended_at?dt(v.ended_at):"진행 중"} · ${fmt(v.study_seconds)} · ${v.questions}문제 · 정답 ${v.correct} · 오답 ${v.wrong}${v.logout_reason?` · ${v.logout_reason}`:""}</div>`).join(""):"학습 이력이 없습니다.";r.classList.remove("hide")});document.querySelectorAll(".expMobile").forEach(b=>b.onclick=async()=>{let r=document.getElementById("md"+b.dataset.id);if(!r.classList.contains("hide")){r.classList.add("hide");b.textContent="세션 기록 보기";return}let {data=[]}=await db.from("study_sessions").select("*").eq("student_id",b.dataset.id).order("started_at",{ascending:false}).limit(20);r.innerHTML=data.length?data.map(v=>`<div class=note><b>${dt(v.started_at)}</b><br>${v.ended_at?dt(v.ended_at):"진행 중"} · ${fmt(v.study_seconds)}<br>${v.questions}문제 · 정답 ${v.correct} · 오답 ${v.wrong}${v.logout_reason?` · ${v.logout_reason}`:""}</div>`).join(""):"학습 이력이 없습니다.";r.classList.remove("hide");b.textContent="세션 기록 닫기"});window.onkeydown=e=>{if(e.ctrlKey&&e.key.toLowerCase()==="c"){e.preventDefault();tools.classList.toggle("hide")}};on("add",async()=>{let n=prompt("새 ID"),p=n&&prompt("새 비밀번호");if(n&&p){let {error}=await db.from("students").insert({username:n,password:p,easy_ratio:50});error?alert(error.message):teacher()}});on("rename",async()=>{if(!sel)return alert("학생을 선택하세요.");let n=prompt("새 ID");if(n){await db.from("students").update({username:n}).eq("id",sel);teacher()}});on("spw",async()=>{if(!sel)return alert("학생을 선택하세요.");let p=prompt("새 비밀번호");if(p){await db.from("students").update({password:p}).eq("id",sel);teacher()}});on("reset",async()=>{if(sel&&confirm("기록을 초기화할까요?")){await resetStudentRecord(sel);teacher()}});on("del",async()=>{if(sel&&confirm("학생을 삭제할까요?")){let {error}=await db.from("students").delete().eq("id",sel);error?alert(error.message):teacher()}})}
+async function editAlertGroup(i){let g=window._alertGroups?.[i];if(!g)return;let v=prompt("알림 내용 수정",g.event_message||g.event_type);if(v&&v.trim()){for(let id of g.ids)await db.from("student_events").update({event_message:v.trim()}).eq("id",id);admin()}}
+async function deleteAlertGroup(i,btn){let g=window._alertGroups?.[i];if(!g||!confirm(`이 알림 ${g.n}개를 삭제할까요?`))return;for(let id of g.ids)await db.from("student_events").delete().eq("id",id);btn.closest(".alertrow").remove()}
+async function admin(){keysOff();let {data=[]}=await db.from("students").select("*").order("username"),
+rows=data.map(x=>`<tr data-id="${x.id}"><td><input class=idinput data-k=username value="${x.username}"></td><td><input data-k=easy_ratio value="${x.easy_ratio??50}">%</td><td><input data-k=hint_count value="${x.hint_count||0}"></td><td><input data-k=study_seconds value="${x.study_seconds||0}"></td><td><input data-k=total_questions value="${x.total_questions||0}"></td><td><input data-k=correct_answers value="${x.correct_answers||0}"></td><td><input data-k=wrong_answers value="${x.wrong_answers||0}"></td><td><input data-k=best_streak value="${x.best_streak||0}"></td><td><button class=save>저장</button> <button class=pw>비번</button> <button class=wa>오답</button> <button class=resetA>초기화</button> <button class=delA>삭제</button></td></tr>`).join(""),
+cards=data.map(x=>`<section class=adminCard data-id="${x.id}">
+  <div class=adminCardTitle><b>${x.username}</b><span class=muted>학생 관리</span></div>
+  <div class=adminGrid>
+    <div class="adminField idWide"><label>ID</label><input class=idinput data-k=username value="${x.username}"></div>
+    <div class=adminField><label>쉬움 %</label><input inputmode=numeric data-k=easy_ratio value="${x.easy_ratio??50}"></div>
+    <div class=adminField><label>힌트 사용</label><input inputmode=numeric data-k=hint_count value="${x.hint_count||0}"></div>
+    <div class=adminField><label>학습시간(초)</label><input inputmode=numeric data-k=study_seconds value="${x.study_seconds||0}"></div>
+    <div class=adminField><label>푼 문제</label><input inputmode=numeric data-k=total_questions value="${x.total_questions||0}"></div>
+    <div class=adminField><label>정답</label><input inputmode=numeric data-k=correct_answers value="${x.correct_answers||0}"></div>
+    <div class=adminField><label>오답</label><input inputmode=numeric data-k=wrong_answers value="${x.wrong_answers||0}"></div>
+    <div class=adminField><label>최고연속</label><input inputmode=numeric data-k=best_streak value="${x.best_streak||0}"></div>
+  </div>
+  <div class=adminCardActions>
+    <button class=save>저장</button>
+    <button class=pw>비밀번호</button>
+    <button class=wa>오답노트</button>
+    <button class=resetA>기록 초기화</button>
+    <button class=delA>학생 삭제</button>
+  </div>
+</section>`).join("");
+app.innerHTML=`<div class="wrap admin"><div class=top><h1>Admin</h1><div class=adminTopActions><button id=bell class=bell>🔔<span id=badge class="badge hide"></span></button><button id=back>돌아가기</button></div></div><div id=pop class="pop hide"></div><div class=actions><button id=addA>학생 추가</button><button id=tpw>선생님 비밀번호 변경</button></div><div class="tablewrap desktopAdmin"><table><thead><tr><th>ID</th><th>쉬움%</th><th>힌트 사용</th><th>학습초</th><th>푼문제</th><th>정답</th><th>오답</th><th>최고연속</th><th>관리</th></tr></thead><tbody>${rows}</tbody></table></div><div class=mobileAdminCards>${cards}</div></div>`;on("back",home);(async()=>{let {data:aa=[]}=await db.from("student_events").select("*,students(username)").in("event_type",["inactivity_logout","focus_leave","duplicate_login","wrong_streak","high_wrong_rate","browser_translation_suspected"]).order("created_at",{ascending:false}).limit(30);let unread=aa.filter(x=>!x.admin_read).length,b=document.getElementById("badge");if(unread){b.textContent=unread;b.classList.remove("hide")}on("bell",async()=>{let p=document.getElementById("pop");p.innerHTML=`<b>학생 학습 알림</b>${(()=>{let m=new Map(),g=[];aa.forEach(a=>{let k=`${a.student_id}|${a.event_type}|${a.event_message||""}`;if(m.has(k)){m.get(k).n++;m.get(k).ids.push(a.id)}else{let z={...a,n:1,ids:[a.id]};m.set(k,z);g.push(z)}});window._alertGroups=g;return g.map((a,i)=>`<div class=alertrow><b>${a.students?.username||""}</b> · <span class=msg>${a.event_message||a.event_type}</span>${a.n>1?` <b>×${a.n}</b>`:""}<div class=muted>${dt(a.created_at)}</div><div class=alertActions><button onclick="editAlertGroup(${i})">수정</button><button onclick="deleteAlertGroup(${i},this)">삭제</button></div></div>`).join("")||"<div class=note>알림이 없습니다.</div>"})()} `;p.classList.toggle("hide");await db.from("student_events").update({admin_read:true}).eq("admin_read",false);b.classList.add("hide")})})();on("addA",async()=>{let n=prompt("새 ID"),p=n&&prompt("새 비밀번호");if(n&&p){await db.from("students").insert({username:n,password:p,easy_ratio:50});admin()}});on("tpw",async()=>{let p=prompt("새 선생님 비밀번호");if(p){let {error}=await db.from("teacher_account").update({password:p,updated_at:new Date().toISOString()}).eq("id",1);error?alert(error.message):alert("변경했습니다.")}});document.querySelectorAll(".save").forEach(b=>b.onclick=async()=>{let r=b.closest("[data-id]"),v={};r.querySelectorAll("input").forEach(i=>v[i.dataset.k]=i.dataset.k==="username"?i.value.trim():Math.max(0,parseInt(i.value)||0));v.easy_ratio=Math.min(100,v.easy_ratio);let {error}=await db.from("students").update(v).eq("id",r.dataset.id);if(error)alert(error.message);else{if(+r.dataset.id===+u.id)Object.assign(u,v);alert("저장했습니다.")}});document.querySelectorAll(".pw").forEach(b=>b.onclick=async()=>{let p=prompt("새 비밀번호");if(p){await db.from("students").update({password:p}).eq("id",b.closest("[data-id]").dataset.id);alert("변경했습니다.")}});document.querySelectorAll(".resetA").forEach(b=>b.onclick=async()=>{let id=b.closest("[data-id]").dataset.id;if(confirm("이 학생의 기록을 초기화할까요?")){await resetStudentRecord(id);if(+id===+u.id){saveLogin(null);return loginPage("관리자 계정 기록이 초기화되어 다시 로그인해 주세요.")}admin()}});document.querySelectorAll(".delA").forEach(b=>b.onclick=async()=>{if(confirm("삭제할까요?")){await db.from("students").delete().eq("id",b.closest("[data-id]").dataset.id);admin()}});document.querySelectorAll(".wa").forEach(b=>b.onclick=async()=>{let id=b.closest("[data-id]").dataset.id,{data=[]}=await db.from("wrong_answers").select("*").eq("student_id",id);let text=data.map(w=>{let x=BANK.find(z=>z.id===w.proverb_id);return x?`${x.en} (${w.wrong_count}회)`:""}).filter(Boolean).join("\n");if(confirm((text||"오답 없음")+"\n\n이 학생의 오답을 모두 지울까요?")){await db.from("wrong_answers").delete().eq("student_id",id);alert("삭제했습니다.")}})}
+restore();
+</script></body></html>
